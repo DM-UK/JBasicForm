@@ -4,20 +4,20 @@ import slider.DoubleSlider;
 import slider.SliderDisplayPane;
 
 import javax.swing.*;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
 
 public class JBasicForm extends JPanel {
-    private List<ChangeListener> changeListeners = new ArrayList<>();
+    private List<ActionListener> actionListeners = new ArrayList<>();
     private JPanel labelPanel = new JPanel();
     private JPanel componentPanel = new JPanel();
     private JPanel buttonPanel = new JPanel();
-    JButton button = new JButton();
+    private JButton button = new JButton();
 
     public JBasicForm(){
         init();
@@ -40,6 +40,10 @@ public class JBasicForm extends JPanel {
         button.setVisible(false);
         buttonPanel.add(button);
         add(buttonPanel, BorderLayout.SOUTH);
+    }
+
+    public JButton getButton() {
+        return button;
     }
 
     protected void setButtonText(String text) {
@@ -92,38 +96,39 @@ public class JBasicForm extends JPanel {
         return comboBox;
     }
 
-    private void fireChangeListeners() {
-        ChangeEvent event = new ChangeEvent(this);
-        for (ChangeListener listener : changeListeners) {
-            listener.stateChanged(event);
+    private void fireActionListeners() {
+        ActionEvent event = new ActionEvent(this, ActionEvent.ACTION_PERFORMED, "valueChanged");
+
+        for (ActionListener listener : actionListeners) {
+            listener.actionPerformed(event);
         }
     }
 
-    public void addChangeListener(ChangeListener listener) {
-        changeListeners.add(listener);
+    public void addActionListener(ActionListener listener) {
+        actionListeners.add(listener);
     }
 
-    public void removeChangeListener(ChangeListener listener) {
-        changeListeners.remove(listener);
+    public void removeActionListener(ActionListener listener) {
+        actionListeners.remove(listener);
     }
 
     private void attachListenerToTextField(JTextField textField) {
         textField.getDocument().addDocumentListener(new DocumentListener() {
-            public void insertUpdate(DocumentEvent e) { fireChangeListeners(); }
-            public void removeUpdate(DocumentEvent e) { fireChangeListeners(); }
-            public void changedUpdate(DocumentEvent e) { fireChangeListeners(); }
+            public void insertUpdate(DocumentEvent e) { fireActionListeners(); }
+            public void removeUpdate(DocumentEvent e) { fireActionListeners(); }
+            public void changedUpdate(DocumentEvent e) { fireActionListeners(); }
         });
     }
 
     private void attachListenerToComboBox(JComboBox<String> comboBox) {
         comboBox.addActionListener(e -> {
-            fireChangeListeners();
+            fireActionListeners();
         });
     }
 
     private void attachListenerToSlider(JSlider slider) {
         slider.addChangeListener(e -> {
-            fireChangeListeners();
+            fireActionListeners();
         });
     }
 }
