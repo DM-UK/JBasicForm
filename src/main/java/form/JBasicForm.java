@@ -96,6 +96,43 @@ public class JBasicForm extends JPanel {
         return comboBox;
     }
 
+    protected JRadioButton addRadioButtonField(String labelText, boolean init){
+        JRadioButton radioButton = new JRadioButton();
+        radioButton.setEnabled(init);
+        attachListenerToRadioButton(radioButton);
+        addLabel(labelText);
+        addField(radioButton);
+        return radioButton;
+    }
+
+    protected ButtonGroup addTrueFalseField(String labelText, boolean defaultValue) {
+        JRadioButton trueButton = new JRadioButton("True");
+        JRadioButton falseButton = new JRadioButton("False");
+
+        trueButton.setSelected(defaultValue);
+        falseButton.setSelected(!defaultValue);
+
+        ButtonGroup group = new ButtonGroup();
+        group.add(trueButton);
+        group.add(falseButton);
+
+        attachListenerToRadioButton(trueButton);
+        attachListenerToRadioButton(falseButton);
+
+        addLabel(labelText);
+
+        // Add buttons to a horizontal panel
+        JPanel container = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        container.add(trueButton);
+        container.add(falseButton);
+        componentPanel.add(container);
+
+        trueButton.setActionCommand("True");
+        falseButton.setActionCommand("False");
+
+        return group;
+    }
+
     private void fireActionListeners() {
         ActionEvent event = new ActionEvent(this, ActionEvent.ACTION_PERFORMED, "valueChanged");
 
@@ -128,6 +165,13 @@ public class JBasicForm extends JPanel {
 
     private void attachListenerToSlider(JSlider slider) {
         slider.addChangeListener(e -> {
+            fireActionListeners();
+        });
+    }
+
+
+    private void attachListenerToRadioButton(JRadioButton radioButton) {
+        radioButton.addChangeListener(e -> {
             fireActionListeners();
         });
     }
